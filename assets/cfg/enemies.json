@@ -1,0 +1,26 @@
+{
+    "SmallRed": {
+        "size": { "x": 20, "y": 20 },
+        "color": { "r": 255, "g": 60, "b": 60 },
+        "velocity_min": 60,
+        "velocity_max": 120
+    },
+    "MediumBlue": {
+        "size": { "x": 35, "y": 35 },
+        "color": { "r": 60, "g": 120, "b": 255 },
+        "velocity_min": 40,
+        "velocity_max": 90
+    },
+    "LargeGreen": {
+        "size": { "x": 50, "y": 30 },
+        "color": { "r": 60, "g": 220, "b": 80 },
+        "velocity_min": 30,
+        "velocity_max": 70
+    },
+    "TinyYellow": {
+        "size": { "x": 15, "y": 15 },
+        "color": { "r": 255, "g": 220, "b": 0 },
+        "velocity_min": 80,
+        "velocity_max": 160
+    }
+}
