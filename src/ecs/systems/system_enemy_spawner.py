@@ -10,6 +10,7 @@ from src.ecs.components.size import Size
 from src.ecs.components.velocity import Velocity
 from src.ecs.components.color import Color
 from src.ecs.components.active import Active
+from src.ecs.components.c_tag_enemy import CTagEnemy
 
 
 class SystemEnemySpawner(esper.Processor):
@@ -43,5 +44,6 @@ class SystemEnemySpawner(esper.Processor):
             Velocity(dx=dx, dy=dy),
             Size(width=sz["x"], height=sz["y"]),
             Color(r=col["r"], g=col["g"], b=col["b"]),
-            Active()
+            Active(),
+            CTagEnemy()
         )

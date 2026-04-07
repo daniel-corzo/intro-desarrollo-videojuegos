@@ -6,6 +6,7 @@ from src.ecs.components.position import Position
 from src.ecs.components.velocity import Velocity
 from src.ecs.components.size import Size
 from src.ecs.components.active import Active
+from src.ecs.components.c_tag_enemy import CTagEnemy
 
 
 class SystemScreenBounce(esper.Processor):
@@ -15,7 +16,7 @@ class SystemScreenBounce(esper.Processor):
         self.screen_height = screen_height
 
     def process(self, delta_time):
-        for _, (pos, vel, size, _) in self.world.get_components(Position, Velocity, Size, Active):
+        for _, (pos, vel, size, _, _) in self.world.get_components(Position, Velocity, Size, Active, CTagEnemy):
             if pos.x < 0:
                 pos.x = 0
                 vel.dx = abs(vel.dx)

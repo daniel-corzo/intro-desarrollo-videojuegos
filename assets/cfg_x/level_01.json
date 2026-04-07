@@ -1,0 +1,17 @@
+{
+    "player_spawn": {
+        "position": {
+            "x": 305,
+            "y": 165
+        },
+        "max_bullets": 5
+    },
+    "enemy_spawn_events": [
+        { "enemy_type": "SmallRed",   "time": 0.5, "position": { "x": 100, "y": 80  } },
+        { "enemy_type": "MediumBlue", "time": 1.5, "position": { "x": 300, "y": 50  } },
+        { "enemy_type": "LargeGreen", "time": 2.5, "position": { "x": 200, "y": 200 } },
+        { "enemy_type": "TinyYellow", "time": 3.0, "position": { "x": 450, "y": 150 } },
+        { "enemy_type": "SmallRed",   "time": 4.0, "position": { "x": 50,  "y": 300 } },
+        { "enemy_type": "MediumBlue", "time": 7.0, "position": { "x": 550, "y": 250 } }
+    ]
+}

@@ -5,9 +5,23 @@ import pygame
 import esper
 
 from src.ecs.components.enemy_spawner import EnemySpawner
+from src.ecs.components.position import Position
+from src.ecs.components.velocity import Velocity
+from src.ecs.components.size import Size
+from src.ecs.components.color import Color
+from src.ecs.components.active import Active
+from src.ecs.components.c_tag_player import CTagPlayer
+from src.ecs.components.c_input_command import CInputCommand
+
+from src.ecs.systems.system_input import SystemInput
+from src.ecs.systems.system_player_movement import SystemPlayerMovement
 from src.ecs.systems.system_enemy_spawner import SystemEnemySpawner
 from src.ecs.systems.system_movement import SystemMovement
 from src.ecs.systems.system_screen_bounce import SystemScreenBounce
+from src.ecs.systems.system_player_boundary import SystemPlayerBoundary
+from src.ecs.systems.system_bullet_boundary import SystemBulletBoundary
+from src.ecs.systems.system_collision_bullet_enemy import SystemCollisionBulletEnemy
+from src.ecs.systems.system_collision_player_enemy import SystemCollisionPlayerEnemy
 from src.ecs.systems.system_rendering import SystemRendering
 
 
@@ -38,7 +52,17 @@ class GameEngine:
             enemies_cfg = json.load(f)
 
         with open("assets/cfg/level_01.json") as f:
-            level_cfg = json.load(f)["enemy_spawn_events"]
+            level_full = json.load(f)
+
+        with open("assets/cfg/player.json") as f:
+            player_cfg = json.load(f)
+
+        with open("assets/cfg/bullet.json") as f:
+            bullet_cfg = json.load(f)
+
+        level_events   = level_full["enemy_spawn_events"]
+        player_spawn   = level_full["player_spawn"]["position"]
+        max_bullets    = level_full["player_spawn"]["max_bullets"]
 
         # Inicializar pygame y ventana
         pygame.init()
@@ -54,10 +78,9 @@ class GameEngine:
         # Crear el mundo ECS
         self.world = esper.World()
 
-        # Resolver eventos: cruzar datos del nivel con datos del enemigo
-        # enemies_cfg es un dict: { "TypeA": { size, color, velocity_min, velocity_max }, ... }
+        # Resolver eventos de spawn: cruzar nivel con tipos de enemigo
         spawn_events = []
-        for event in level_cfg:
+        for event in level_events:
             enemy = enemies_cfg[event["enemy_type"]]
             spawn_events.append({
                 "time":      event["time"],
@@ -69,14 +92,35 @@ class GameEngine:
                 "spawned":   False
             })
 
-        # Crear la única entidad con el componente EnemySpawner
+        # Entidad singleton con los datos del spawner
         self.world.create_entity(EnemySpawner(spawn_events=spawn_events))
 
+        # Entidad jugador
+        p = player_cfg
+        self.world.create_entity(
+            Position(x=float(player_spawn["x"]), y=float(player_spawn["y"])),
+            Velocity(dx=0.0, dy=0.0),
+            Size(width=float(p["size"]["x"]), height=float(p["size"]["y"])),
+            Color(r=p["color"]["r"], g=p["color"]["g"], b=p["color"]["b"]),
+            Active(),
+            CTagPlayer()
+        )
+
+        # Entidad singleton de comandos de entrada
+        self.world.create_entity(CInputCommand())
+
         # Registrar sistemas (mayor prioridad = se ejecuta primero)
-        self.world.add_processor(SystemEnemySpawner(),                        priority=4)
-        self.world.add_processor(SystemMovement(),                            priority=3)
-        self.world.add_processor(SystemScreenBounce(size["w"], size["h"]),    priority=2)
-        self.world.add_processor(SystemRendering(self.screen, self.bg_color), priority=1)
+        self.world.add_processor(SystemInput(),                                                   priority=10)
+        self.world.add_processor(SystemPlayerMovement(p["input_velocity"], bullet_cfg, max_bullets), priority=9)
+        self.world.add_processor(SystemEnemySpawner(),                                            priority=8)
+        self.world.add_processor(SystemMovement(),                                                priority=7)
+        self.world.add_processor(SystemScreenBounce(size["w"], size["h"]),                        priority=6)
+        self.world.add_processor(SystemPlayerBoundary(size["w"], size["h"]),                      priority=5)
+        self.world.add_processor(SystemBulletBoundary(size["w"], size["h"]),                      priority=4)
+        self.world.add_processor(SystemCollisionBulletEnemy(),                                    priority=3)
+        self.world.add_processor(SystemCollisionPlayerEnemy(
+            float(player_spawn["x"]), float(player_spawn["y"])),                                  priority=2)
+        self.world.add_processor(SystemRendering(self.screen, self.bg_color),                     priority=1)
 
     # -------------------------------------------------------------------------
     # CALCULAR TIEMPO
