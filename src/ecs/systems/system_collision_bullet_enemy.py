@@ -5,15 +5,15 @@ import esper
 from src.ecs.components.position import Position
 from src.ecs.components.size import Size
 from src.ecs.components.active import Active
-from src.ecs.components.c_tag_bullet import CTagBullet
-from src.ecs.components.c_tag_enemy import CTagEnemy
+from src.ecs.components.tag_bullet import TagBullet
+from src.ecs.components.tag_enemy import TagEnemy
 
 
 class SystemCollisionBulletEnemy(esper.Processor):
 
     def process(self, delta_time):
-        bullets  = list(self.world.get_components(Position, Size, Active, CTagBullet))
-        enemies  = list(self.world.get_components(Position, Size, Active, CTagEnemy))
+        bullets  = list(self.world.get_components(Position, Size, Active, TagBullet))
+        enemies  = list(self.world.get_components(Position, Size, Active, TagEnemy))
 
         for b_ent, (b_pos, b_size, _, _) in bullets:
             for e_ent, (e_pos, e_size, _, _) in enemies:

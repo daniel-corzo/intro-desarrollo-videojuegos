@@ -8,9 +8,9 @@ from src.ecs.components.velocity import Velocity
 from src.ecs.components.size import Size
 from src.ecs.components.color import Color
 from src.ecs.components.active import Active
-from src.ecs.components.c_tag_player import CTagPlayer
-from src.ecs.components.c_tag_bullet import CTagBullet
-from src.ecs.components.c_input_command import CInputCommand
+from src.ecs.components.tag_player import TagPlayer
+from src.ecs.components.tag_bullet import TagBullet
+from src.ecs.components.input_command import InputCommand
 
 
 class SystemPlayerMovement(esper.Processor):
@@ -23,7 +23,7 @@ class SystemPlayerMovement(esper.Processor):
     def process(self, delta_time):
         # Leer el único componente de entrada
         inp = None
-        for _, (cmd,) in self.world.get_components(CInputCommand):
+        for _, (cmd,) in self.world.get_components(InputCommand):
             inp = cmd
             break
         if inp is None:
@@ -31,7 +31,7 @@ class SystemPlayerMovement(esper.Processor):
 
         # Actualizar velocidad del jugador según las acciones
         for _, (vel, pos, size, _, _) in self.world.get_components(
-                Velocity, Position, Size, Active, CTagPlayer):
+                Velocity, Position, Size, Active, TagPlayer):
             vel.dx = 0.0
             vel.dy = 0.0
             if inp.actions["PLAYER_LEFT"]:
@@ -46,8 +46,8 @@ class SystemPlayerMovement(esper.Processor):
             if inp.actions["PLAYER_FIRE"]:
                 self._fire_bullet(pos, size, inp)
 
-    def _fire_bullet(self, player_pos: Position, player_size: Size, inp: CInputCommand):
-        bullet_count = sum(1 for _ in self.world.get_component(CTagBullet))
+    def _fire_bullet(self, player_pos: Position, player_size: Size, inp: InputCommand):
+        bullet_count = sum(1 for _ in self.world.get_component(TagBullet))
         if bullet_count >= self.max_bullets:
             return
 
@@ -73,5 +73,5 @@ class SystemPlayerMovement(esper.Processor):
             Size(width=bw, height=bh),
             Color(r=b["color"]["r"], g=b["color"]["g"], b=b["color"]["b"]),
             Active(),
-            CTagBullet()
+            TagBullet()
         )

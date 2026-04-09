@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class CInputCommand:
+class InputCommand:
     """
     Almacena el estado de entrada del jugador siguiendo el patrón Command.
 

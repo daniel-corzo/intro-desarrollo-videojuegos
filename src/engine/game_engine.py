@@ -11,8 +11,8 @@ from src.ecs.components.velocity import Velocity
 from src.ecs.components.size import Size
 from src.ecs.components.color import Color
 from src.ecs.components.active import Active
-from src.ecs.components.c_tag_player import CTagPlayer
-from src.ecs.components.c_input_command import CInputCommand
+from src.ecs.components.tag_player import TagPlayer
+from src.ecs.components.input_command import InputCommand
 
 from src.ecs.systems.system_input import SystemInput
 from src.ecs.systems.system_player_movement import SystemPlayerMovement
@@ -105,11 +105,11 @@ class GameEngine:
             Size(width=float(p["size"]["x"]), height=float(p["size"]["y"])),
             Color(r=p["color"]["r"], g=p["color"]["g"], b=p["color"]["b"]),
             Active(),
-            CTagPlayer()
+            TagPlayer()
         )
 
         # Entidad singleton de comandos de entrada
-        self.world.create_entity(CInputCommand())
+        self.world.create_entity(InputCommand())
 
         # Registrar sistemas (mayor prioridad = se ejecuta primero)
         self.world.add_processor(SystemInput(),                                                   priority=10)

@@ -6,8 +6,8 @@ from src.ecs.components.position import Position
 from src.ecs.components.velocity import Velocity
 from src.ecs.components.size import Size
 from src.ecs.components.active import Active
-from src.ecs.components.c_tag_player import CTagPlayer
-from src.ecs.components.c_tag_enemy import CTagEnemy
+from src.ecs.components.tag_player import TagPlayer
+from src.ecs.components.tag_enemy import TagEnemy
 
 
 class SystemCollisionPlayerEnemy(esper.Processor):
@@ -17,8 +17,8 @@ class SystemCollisionPlayerEnemy(esper.Processor):
         self.spawn_y = spawn_y
 
     def process(self, delta_time):
-        players = list(self.world.get_components(Position, Velocity, Size, Active, CTagPlayer))
-        enemies = list(self.world.get_components(Position, Size, Active, CTagEnemy))
+        players = list(self.world.get_components(Position, Velocity, Size, Active, TagPlayer))
+        enemies = list(self.world.get_components(Position, Size, Active, TagEnemy))
 
         for p_ent, (p_pos, p_vel, p_size, _, _) in players:
             for e_ent, (e_pos, e_size, _, _) in enemies:

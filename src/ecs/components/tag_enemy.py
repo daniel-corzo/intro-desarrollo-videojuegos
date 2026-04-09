@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class CTagEnemy:
+class TagEnemy:
     """Marcador: la entidad es un enemigo."""
     pass

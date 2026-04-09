@@ -1,9 +1,9 @@
-"""Sistema de entrada: lee teclado y ratón, actualiza CInputCommand (patrón Command)."""
+"""Sistema de entrada: lee teclado y ratón, actualiza InputCommand (patrón Command)."""
 
 import pygame
 import esper
 
-from src.ecs.components.c_input_command import CInputCommand
+from src.ecs.components.input_command import InputCommand
 
 
 class SystemInput(esper.Processor):
@@ -16,7 +16,7 @@ class SystemInput(esper.Processor):
         mouse_pressed = pygame.mouse.get_pressed()[0]
         mouse_pos = pygame.mouse.get_pos()
 
-        for _, (inp,) in self.world.get_components(CInputCommand):
+        for _, (inp,) in self.world.get_components(InputCommand):
             inp.actions["PLAYER_LEFT"]  = bool(keys[pygame.K_LEFT])
             inp.actions["PLAYER_RIGHT"] = bool(keys[pygame.K_RIGHT])
             inp.actions["PLAYER_UP"]    = bool(keys[pygame.K_UP])

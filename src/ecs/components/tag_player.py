@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class CTagPlayer:
+class TagPlayer:
     """Marcador: la entidad es el jugador."""
     pass

@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class CTagBullet:
+class TagBullet:
     """Marcador: la entidad es una bala."""
     pass
