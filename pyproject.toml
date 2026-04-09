@@ -1,0 +1,6 @@
+[project]
+name = "intro-desarrollo-videojuegos"
+version = "0.1.0"
+
+[tool.pygbag]
+exclude = [".venv", ".git", ".idea", ".vscode", ".claude", "build", "__pycache__"]
