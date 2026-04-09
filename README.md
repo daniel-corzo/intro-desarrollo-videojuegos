@@ -8,7 +8,8 @@ Coursework for **MISW4407 — Introduction to Video Game Development** at Univer
 
 ```
 ├── main.py                 # Entry point
-├── assets/                 # Game assets (sprites, sounds, etc.)
+├── esper/                  # Vendored esper 2.5 (required for pygbag/web)
+├── assets/                 # Game assets and JSON configs
 ├── src/
 │   ├── create/             # Entity factory / creation utilities
 │   ├── ecs/
@@ -16,6 +17,7 @@ Coursework for **MISW4407 — Introduction to Video Game Development** at Univer
 │   │   └── systems/        # Logic systems (movement, rendering, collision, etc.)
 │   └── engine/
 │       └── game_engine.py  # Core game loop and engine orchestration
+├── pyproject.toml
 ├── requirements.txt
 └── .pylintrc               # Code quality enforcement
 ```
@@ -33,10 +35,19 @@ The project follows the **Entity Component System** pattern:
 
 ## Running
 
+**Desktop:**
 ```bash
 pip install -r requirements.txt
 python main.py
 ```
+
+**Web (pygbag):**
+```bash
+python -m pygbag main.py
+```
+Then open `http://localhost:8000` in your browser.
+
+> `esper` is vendored in the `esper/` folder so it is available in the WebAssembly runtime. This is required because pygbag runs on Pyodide, which cannot use packages installed in your local virtualenv.
 
 ## Topics Covered
 
