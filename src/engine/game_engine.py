@@ -163,29 +163,45 @@ class GameEngine:
         expl_anim_cfg = explosion_cfg["animations"]
 
         # ---- Registrar sistemas (mayor prioridad = se ejecuta primero) ------
-        self.world.add_processor(SystemInput(),                                          priority=10)
+        #
+        # Criterio: las prioridades reflejan el pipeline de datos del frame.
+        # Se usan múltiplos de 10 para dejar espacio a futuras inserciones.
+        #
+        #  100  Leer input del teclado/ratón
+        #   90  Establecer velocidad del jugador (consume input)
+        #   80  Actualizar estado de animación player/hunter (consume velocidad)
+        #   70  Mover el Hunter según FSM (produce velocidad del hunter)
+        #   60  Spawnear nuevas entidades
+        #   50  Integrar velocidad → posición (consume velocidades)
+        #   40  Avanzar cuadros de animación (después de moverse)
+        #   30  Aplicar bordes y rebotes (corrige posiciones)
+        #   20  Detectar colisiones (sobre posiciones ya corregidas)
+        #   10  Renderizar (todo ya está en su lugar)
+        #    0  Limpiar entidades terminadas
+
+        self.world.add_processor(SystemInput(),                                          priority=100)
         self.world.add_processor(
             SystemPlayerMovement(
                 player_speed=player_cfg["input_velocity"],
                 bullet_surface=bullet_surface,
                 bullet_velocity=bullet_cfg["velocity"],
                 max_bullets=max_bullets
-            ),                                                                           priority=9)
-        self.world.add_processor(SystemPlayerAnimation(),                                priority=85)
-        self.world.add_processor(SystemHunterAnimation(),                                priority=84)
-        self.world.add_processor(SystemEnemySpawner(),                                   priority=8)
-        self.world.add_processor(SystemHunterMovement(),                                 priority=75)
-        self.world.add_processor(SystemMovement(),                                       priority=7)
-        self.world.add_processor(SystemAnimation(),                                      priority=68)
-        self.world.add_processor(SystemScreenBounce(size["w"], size["h"]),               priority=6)
-        self.world.add_processor(SystemPlayerBoundary(size["w"], size["h"]),             priority=5)
-        self.world.add_processor(SystemBulletBoundary(size["w"], size["h"]),             priority=4)
+            ),                                                                           priority=90)
+        self.world.add_processor(SystemPlayerAnimation(),                                priority=80)
+        self.world.add_processor(SystemHunterAnimation(),                                priority=80)
+        self.world.add_processor(SystemHunterMovement(),                                 priority=70)
+        self.world.add_processor(SystemEnemySpawner(),                                   priority=60)
+        self.world.add_processor(SystemMovement(),                                       priority=50)
+        self.world.add_processor(SystemAnimation(),                                      priority=40)
+        self.world.add_processor(SystemScreenBounce(size["w"], size["h"]),               priority=30)
+        self.world.add_processor(SystemPlayerBoundary(size["w"], size["h"]),             priority=30)
+        self.world.add_processor(SystemBulletBoundary(size["w"], size["h"]),             priority=30)
         self.world.add_processor(
-            SystemCollisionBulletEnemy(explosion_surface, expl_anim_cfg),                priority=3)
+            SystemCollisionBulletEnemy(explosion_surface, expl_anim_cfg),                priority=20)
         self.world.add_processor(
             SystemCollisionPlayerEnemy(spawn_x, spawn_y, explosion_surface, expl_anim_cfg),
-                                                                                         priority=2)
-        self.world.add_processor(SystemRendering(self.screen, self.bg_color),            priority=1)
+                                                                                         priority=20)
+        self.world.add_processor(SystemRendering(self.screen, self.bg_color),            priority=10)
         self.world.add_processor(SystemExplosionCleanup(),                               priority=0)
 
     # -------------------------------------------------------------------------
