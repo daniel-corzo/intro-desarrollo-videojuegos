@@ -16,8 +16,10 @@ _ARRIVAL_THRESHOLD = 8.0  # píxeles de tolerancia para considerar "llegado al o
 
 class SystemHunterMovement(esper.Processor):
 
+    def __init__(self):
+        self._player_eid = None  # entidad del jugador cacheada
+
     def process(self, delta_time):
-        # Obtener posición del jugador (centro)
         player_cx, player_cy = self._get_player_center()
         if player_cx is None:
             return
@@ -25,7 +27,6 @@ class SystemHunterMovement(esper.Processor):
         for _, (pos, vel, c_surf, hunter, _, _) in self.world.get_components(
                 Position, Velocity, Surface, HunterState, Active, TagEnemy):
 
-            # Centro del hunter
             hx = pos.x + c_surf.area.width / 2
             hy = pos.y + c_surf.area.height / 2
 
@@ -58,10 +59,21 @@ class SystemHunterMovement(esper.Processor):
 
     # -------------------------------------------------------------------------
     def _get_player_center(self):
-        for _, (pos, c_surf, _, _) in self.world.get_components(Position, Surface, Active, TagPlayer):
-            cx = pos.x + c_surf.area.width / 2
-            cy = pos.y + c_surf.area.height / 2
-            return cx, cy
+        # Usar la entidad cacheada si sigue viva y activa
+        if self._player_eid is not None:
+            try:
+                pos = self.world.component_for_entity(self._player_eid, Position)
+                c_surf = self.world.component_for_entity(self._player_eid, Surface)
+                return pos.x + c_surf.area.width / 2, pos.y + c_surf.area.height / 2
+            except KeyError:
+                self._player_eid = None  # entidad eliminada, volver a buscar
+
+        # Búsqueda completa solo cuando no hay caché válido
+        for eid, (pos, c_surf, _, _) in self.world.get_components(
+                Position, Surface, Active, TagPlayer):
+            self._player_eid = eid
+            return pos.x + c_surf.area.width / 2, pos.y + c_surf.area.height / 2
+
         return None, None
 
     @staticmethod

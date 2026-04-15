@@ -11,6 +11,9 @@ class AnimationData:
     end: int        # último cuadro (inclusivo)
     framerate: int  # cuadros por segundo
 
+    def __post_init__(self):
+        self.time_per_frame: float = (1.0 / self.framerate) if self.framerate > 0 else 0.0
+
 
 @dataclass
 class Animation:

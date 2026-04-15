@@ -21,6 +21,9 @@ class SystemPlayerMovement(esper.Processor):
         self.bullet_surface = bullet_surface
         self.bullet_velocity = bullet_velocity
         self.max_bullets = max_bullets
+        # Pre-calcular dimensiones de la bala (son fijas)
+        self._bullet_w = bullet_surface.get_width()
+        self._bullet_h = bullet_surface.get_height()
 
     def process(self, delta_time):
         inp = None
@@ -62,8 +65,8 @@ class SystemPlayerMovement(esper.Processor):
         dx /= dist
         dy /= dist
 
-        bw = self.bullet_surface.get_width()
-        bh = self.bullet_surface.get_height()
+        bw = self._bullet_w
+        bh = self._bullet_h
 
         self.world.create_entity(
             Position(x=cx - bw / 2, y=cy - bh / 2),

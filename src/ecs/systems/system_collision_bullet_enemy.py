@@ -16,10 +16,24 @@ class SystemCollisionBulletEnemy(esper.Processor):
 
     def __init__(self, explosion_surface: pygame.Surface, explosion_anim_cfg: dict):
         self._expl_surface = explosion_surface
-        self._expl_anim_cfg = explosion_anim_cfg
+
+        # Pre-calcular una sola vez para todas las explosiones
+        cfg = explosion_anim_cfg
+        num_frames = cfg["number_frames"]
+        self._expl_frame_w = explosion_surface.get_width() // num_frames
+        self._expl_frame_h = explosion_surface.get_height()
+        self._expl_num_frames = num_frames
+        self._expl_animations = {
+            a["name"]: AnimationData(
+                name=a["name"], start=a["start"], end=a["end"], framerate=a["framerate"]
+            )
+            for a in cfg["list"]
+        }
 
     def process(self, delta_time):
         bullets = list(self.world.get_components(Position, Surface, Active, TagBullet))
+        if not bullets:
+            return
         enemies = list(self.world.get_components(Position, Surface, Active, TagEnemy))
 
         for b_ent, (b_pos, b_surf, _, _) in bullets:
@@ -36,30 +50,20 @@ class SystemCollisionBulletEnemy(esper.Processor):
 
     # -------------------------------------------------------------------------
     def _spawn_explosion(self, cx: float, cy: float):
-        cfg = self._expl_anim_cfg
-        num_frames = cfg["number_frames"]
-        frame_w = self._expl_surface.get_width() // num_frames
-        frame_h = self._expl_surface.get_height()
-
-        animations = {}
-        for a in cfg["list"]:
-            animations[a["name"]] = AnimationData(
-                name=a["name"], start=a["start"], end=a["end"], framerate=a["framerate"]
-            )
-
+        fw, fh = self._expl_frame_w, self._expl_frame_h
         self.world.create_entity(
-            Position(x=cx - frame_w / 2, y=cy - frame_h / 2),
+            Position(x=cx - fw / 2, y=cy - fh / 2),
             Surface(
                 surface=self._expl_surface,
-                area=pygame.Rect(0, 0, frame_w, frame_h)
+                area=pygame.Rect(0, 0, fw, fh)
             ),
             Animation(
-                animations=animations,
+                animations=self._expl_animations,
                 current_animation="EXPLODE",
-                current_frame=animations["EXPLODE"].start,
+                current_frame=self._expl_animations["EXPLODE"].start,
                 elapsed_time=0.0,
-                number_frames=num_frames,
-                frame_width=frame_w,
+                number_frames=self._expl_num_frames,
+                frame_width=fw,
                 looping=False
             ),
             Active(),

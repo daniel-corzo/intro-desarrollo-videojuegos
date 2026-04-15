@@ -16,11 +16,11 @@ class SystemAnimation(esper.Processor):
     def process(self, delta_time):
         for _, (c_surf, c_anim, _) in self.world.get_components(Surface, Animation, Active):
             anim = c_anim.animations.get(c_anim.current_animation)
-            if anim is None or anim.framerate <= 0:
+            if anim is None or anim.time_per_frame <= 0:
                 continue
 
             c_anim.elapsed_time += delta_time
-            time_per_frame = 1.0 / anim.framerate
+            time_per_frame = anim.time_per_frame
 
             while c_anim.elapsed_time >= time_per_frame:
                 # Animación no-looping en el último cuadro: no avanzar más
