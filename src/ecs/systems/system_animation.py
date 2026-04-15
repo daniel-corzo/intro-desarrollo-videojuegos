@@ -3,8 +3,8 @@
 import esper
 
 from src.ecs.components.active import Active
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_animation import CAnimation
+from src.ecs.components.surface import Surface
+from src.ecs.components.animation import Animation
 
 
 class SystemAnimation(esper.Processor):
@@ -14,7 +14,7 @@ class SystemAnimation(esper.Processor):
     """
 
     def process(self, delta_time):
-        for _, (c_surf, c_anim, _) in self.world.get_components(CSurface, CAnimation, Active):
+        for _, (c_surf, c_anim, _) in self.world.get_components(Surface, Animation, Active):
             anim = c_anim.animations.get(c_anim.current_animation)
             if anim is None or anim.framerate <= 0:
                 continue

@@ -3,8 +3,8 @@
 import esper
 
 from src.ecs.components.active import Active
-from src.ecs.components.c_animation import CAnimation
-from src.ecs.components.c_tag_explosion import CTagExplosion
+from src.ecs.components.animation import Animation
+from src.ecs.components.tag_explosion import TagExplosion
 
 
 class SystemExplosionCleanup(esper.Processor):
@@ -16,7 +16,7 @@ class SystemExplosionCleanup(esper.Processor):
 
     def process(self, delta_time):
         to_delete = []
-        for ent, (c_anim, _, _) in self.world.get_components(CAnimation, Active, CTagExplosion):
+        for ent, (c_anim, _, _) in self.world.get_components(Animation, Active, TagExplosion):
             if c_anim.looping:
                 continue
             anim = c_anim.animations.get(c_anim.current_animation)

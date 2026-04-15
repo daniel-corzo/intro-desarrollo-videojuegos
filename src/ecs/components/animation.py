@@ -1,4 +1,4 @@
-"""Componente CAnimation: controla el flujo de animación de un sprite sheet."""
+"""Componente Animation: controla el flujo de animación de un sprite sheet."""
 
 from dataclasses import dataclass, field
 
@@ -13,7 +13,7 @@ class AnimationData:
 
 
 @dataclass
-class CAnimation:
+class Animation:
     """
     Estado de animación de una entidad con sprite sheet horizontal.
 

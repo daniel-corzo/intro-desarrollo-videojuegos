@@ -6,8 +6,8 @@ import esper
 from src.ecs.components.active import Active
 from src.ecs.components.position import Position
 from src.ecs.components.velocity import Velocity
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_hunter_state import CHunterState, HunterFSM
+from src.ecs.components.surface import Surface
+from src.ecs.components.hunter_state import HunterState, HunterFSM
 from src.ecs.components.tag_enemy import TagEnemy
 from src.ecs.components.tag_player import TagPlayer
 
@@ -23,7 +23,7 @@ class SystemHunterMovement(esper.Processor):
             return
 
         for _, (pos, vel, c_surf, hunter, _, _) in self.world.get_components(
-                Position, Velocity, CSurface, CHunterState, Active, TagEnemy):
+                Position, Velocity, Surface, HunterState, Active, TagEnemy):
 
             # Centro del hunter
             hx = pos.x + c_surf.area.width / 2
@@ -58,7 +58,7 @@ class SystemHunterMovement(esper.Processor):
 
     # -------------------------------------------------------------------------
     def _get_player_center(self):
-        for _, (pos, c_surf, _, _) in self.world.get_components(Position, CSurface, Active, TagPlayer):
+        for _, (pos, c_surf, _, _) in self.world.get_components(Position, Surface, Active, TagPlayer):
             cx = pos.x + c_surf.area.width / 2
             cy = pos.y + c_surf.area.height / 2
             return cx, cy

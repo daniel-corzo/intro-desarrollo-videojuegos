@@ -1,11 +1,11 @@
-"""Componente CSurface: textura y área de recorte para una entidad con sprite."""
+"""Componente Surface: textura y área de recorte para una entidad con sprite."""
 
 import pygame
 from dataclasses import dataclass
 
 
 @dataclass
-class CSurface:
+class Surface:
     """
     Reemplaza Size + Color. Almacena la superficie completa (sprite sheet o imagen
     simple) y el rect del cuadro activo dentro de ella.

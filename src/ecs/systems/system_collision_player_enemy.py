@@ -8,9 +8,9 @@ from src.ecs.components.velocity import Velocity
 from src.ecs.components.active import Active
 from src.ecs.components.tag_player import TagPlayer
 from src.ecs.components.tag_enemy import TagEnemy
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_animation import CAnimation, AnimationData
-from src.ecs.components.c_tag_explosion import CTagExplosion
+from src.ecs.components.tag_explosion import TagExplosion
+from src.ecs.components.surface import Surface
+from src.ecs.components.animation import Animation, AnimationData
 
 
 class SystemCollisionPlayerEnemy(esper.Processor):
@@ -23,8 +23,8 @@ class SystemCollisionPlayerEnemy(esper.Processor):
         self._expl_anim_cfg = explosion_anim_cfg
 
     def process(self, delta_time):
-        players = list(self.world.get_components(Position, Velocity, CSurface, Active, TagPlayer))
-        enemies = list(self.world.get_components(Position, CSurface, Active, TagEnemy))
+        players = list(self.world.get_components(Position, Velocity, Surface, Active, TagPlayer))
+        enemies = list(self.world.get_components(Position, Surface, Active, TagEnemy))
 
         for p_ent, (p_pos, p_vel, p_surf, _, _) in players:
             for e_ent, (e_pos, e_surf, _, _) in enemies:
@@ -56,11 +56,11 @@ class SystemCollisionPlayerEnemy(esper.Processor):
 
         self.world.create_entity(
             Position(x=cx - frame_w / 2, y=cy - frame_h / 2),
-            CSurface(
+            Surface(
                 surface=self._expl_surface,
                 area=pygame.Rect(0, 0, frame_w, frame_h)
             ),
-            CAnimation(
+            Animation(
                 animations=animations,
                 current_animation="EXPLODE",
                 current_frame=animations["EXPLODE"].start,
@@ -70,11 +70,11 @@ class SystemCollisionPlayerEnemy(esper.Processor):
                 looping=False
             ),
             Active(),
-            CTagExplosion()
+            TagExplosion()
         )
 
     @staticmethod
-    def _aabb(p1: Position, s1: CSurface, p2: Position, s2: CSurface) -> bool:
+    def _aabb(p1: Position, s1: Surface, p2: Position, s2: Surface) -> bool:
         return not (
             p1.x + s1.area.width  <= p2.x or
             p2.x + s2.area.width  <= p1.x or

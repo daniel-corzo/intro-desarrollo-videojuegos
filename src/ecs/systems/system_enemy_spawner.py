@@ -10,9 +10,9 @@ from src.ecs.components.position import Position
 from src.ecs.components.velocity import Velocity
 from src.ecs.components.active import Active
 from src.ecs.components.tag_enemy import TagEnemy
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_animation import CAnimation, AnimationData
-from src.ecs.components.c_hunter_state import CHunterState, HunterFSM
+from src.ecs.components.surface import Surface
+from src.ecs.components.animation import Animation, AnimationData
+from src.ecs.components.hunter_state import HunterState, HunterFSM
 
 
 class SystemEnemySpawner(esper.Processor):
@@ -54,7 +54,7 @@ class SystemEnemySpawner(esper.Processor):
         self.world.create_entity(
             Position(x=float(pos["x"]), y=float(pos["y"])),
             Velocity(dx=dx, dy=dy),
-            CSurface(surface=surface, area=pygame.Rect(0, 0, w, h)),
+            Surface(surface=surface, area=pygame.Rect(0, 0, w, h)),
             Active(),
             TagEnemy()
         )
@@ -80,8 +80,8 @@ class SystemEnemySpawner(esper.Processor):
         self.world.create_entity(
             Position(x=spawn_x, y=spawn_y),
             Velocity(dx=0.0, dy=0.0),
-            CSurface(surface=surface, area=pygame.Rect(0, 0, frame_w, frame_h)),
-            CAnimation(
+            Surface(surface=surface, area=pygame.Rect(0, 0, frame_w, frame_h)),
+            Animation(
                 animations=animations,
                 current_animation="IDLE",
                 current_frame=animations["IDLE"].start,
@@ -90,7 +90,7 @@ class SystemEnemySpawner(esper.Processor):
                 frame_width=frame_w,
                 looping=True
             ),
-            CHunterState(
+            HunterState(
                 origin_x=spawn_x + frame_w / 2,
                 origin_y=spawn_y + frame_h / 2,
                 velocity_chase=event["velocity_chase"],

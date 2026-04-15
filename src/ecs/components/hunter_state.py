@@ -1,4 +1,4 @@
-"""Componente CHunterState: estado de la IA del enemigo Hunter."""
+"""Componente HunterState: estado de la IA del enemigo Hunter."""
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -11,7 +11,7 @@ class HunterFSM(Enum):
 
 
 @dataclass
-class CHunterState:
+class HunterState:
     """
     Almacena la configuración y el estado de la máquina de estados del Hunter.
 

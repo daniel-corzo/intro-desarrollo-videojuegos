@@ -10,7 +10,7 @@ from src.ecs.components.active import Active
 from src.ecs.components.tag_player import TagPlayer
 from src.ecs.components.tag_bullet import TagBullet
 from src.ecs.components.input_command import InputCommand
-from src.ecs.components.c_surface import CSurface
+from src.ecs.components.surface import Surface
 
 
 class SystemPlayerMovement(esper.Processor):
@@ -31,7 +31,7 @@ class SystemPlayerMovement(esper.Processor):
             return
 
         for _, (vel, pos, c_surf, _, _) in self.world.get_components(
-                Velocity, Position, CSurface, Active, TagPlayer):
+                Velocity, Position, Surface, Active, TagPlayer):
             vel.dx = 0.0
             vel.dy = 0.0
             if inp.actions["PLAYER_LEFT"]:
@@ -46,7 +46,7 @@ class SystemPlayerMovement(esper.Processor):
             if inp.actions["PLAYER_FIRE"]:
                 self._fire_bullet(pos, c_surf, inp)
 
-    def _fire_bullet(self, player_pos: Position, player_surf: CSurface, inp: InputCommand):
+    def _fire_bullet(self, player_pos: Position, player_surf: Surface, inp: InputCommand):
         bullet_count = sum(1 for _ in self.world.get_component(TagBullet))
         if bullet_count >= self.max_bullets:
             return
@@ -68,8 +68,8 @@ class SystemPlayerMovement(esper.Processor):
         self.world.create_entity(
             Position(x=cx - bw / 2, y=cy - bh / 2),
             Velocity(dx=dx * self.bullet_velocity, dy=dy * self.bullet_velocity),
-            CSurface(surface=self.bullet_surface,
-                     area=pygame.Rect(0, 0, bw, bh)),
+            Surface(surface=self.bullet_surface,
+                    area=pygame.Rect(0, 0, bw, bh)),
             Active(),
             TagBullet()
         )

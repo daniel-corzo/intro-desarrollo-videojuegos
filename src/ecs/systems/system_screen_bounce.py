@@ -1,6 +1,6 @@
 """Sistema de rebote: invierte la velocidad cuando el sprite toca un borde.
 
-Solo aplica a asteroides (TagEnemy sin CHunterState). Los Hunters manejan
+Solo aplica a asteroides (TagEnemy sin HunterState). Los Hunters manejan
 su propio movimiento en SystemHunterMovement.
 """
 
@@ -10,8 +10,8 @@ from src.ecs.components.position import Position
 from src.ecs.components.velocity import Velocity
 from src.ecs.components.active import Active
 from src.ecs.components.tag_enemy import TagEnemy
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_hunter_state import CHunterState
+from src.ecs.components.surface import Surface
+from src.ecs.components.hunter_state import HunterState
 
 
 class SystemScreenBounce(esper.Processor):
@@ -22,10 +22,10 @@ class SystemScreenBounce(esper.Processor):
 
     def process(self, delta_time):
         for ent, (pos, vel, c_surf, _, _) in self.world.get_components(
-                Position, Velocity, CSurface, Active, TagEnemy):
+                Position, Velocity, Surface, Active, TagEnemy):
 
             # Los Hunters tienen su propio sistema de movimiento, no rebotan
-            if self.world.has_component(ent, CHunterState):
+            if self.world.has_component(ent, HunterState):
                 continue
 
             w = c_surf.area.width

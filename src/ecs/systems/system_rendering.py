@@ -5,7 +5,7 @@ import esper
 
 from src.ecs.components.position import Position
 from src.ecs.components.active import Active
-from src.ecs.components.c_surface import CSurface
+from src.ecs.components.surface import Surface
 
 
 class SystemRendering(esper.Processor):
@@ -17,7 +17,7 @@ class SystemRendering(esper.Processor):
     def process(self, delta_time):
         self.screen.fill(self.bg_color)
 
-        for _, (pos, c_surf, _) in self.world.get_components(Position, CSurface, Active):
+        for _, (pos, c_surf, _) in self.world.get_components(Position, Surface, Active):
             self.screen.blit(c_surf.surface, (pos.x, pos.y), c_surf.area)
 
         pygame.display.flip()

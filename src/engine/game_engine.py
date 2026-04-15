@@ -11,8 +11,8 @@ from src.ecs.components.velocity import Velocity
 from src.ecs.components.active import Active
 from src.ecs.components.tag_player import TagPlayer
 from src.ecs.components.input_command import InputCommand
-from src.ecs.components.c_surface import CSurface
-from src.ecs.components.c_animation import CAnimation, AnimationData
+from src.ecs.components.surface import Surface
+from src.ecs.components.animation import Animation, AnimationData
 
 from src.ecs.systems.system_input import SystemInput
 from src.ecs.systems.system_player_movement import SystemPlayerMovement
@@ -139,11 +139,11 @@ class GameEngine:
         self.world.create_entity(
             Position(x=spawn_x, y=spawn_y),
             Velocity(dx=0.0, dy=0.0),
-            CSurface(
+            Surface(
                 surface=player_surface,
                 area=pygame.Rect(0, 0, p_frame_w, p_frame_h)
             ),
-            CAnimation(
+            Animation(
                 animations=player_animations,
                 current_animation="IDLE",
                 current_frame=player_animations["IDLE"].start,
