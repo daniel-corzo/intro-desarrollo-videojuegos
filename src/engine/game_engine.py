@@ -8,22 +8,27 @@ import esper
 from src.ecs.components.enemy_spawner import EnemySpawner
 from src.ecs.components.position import Position
 from src.ecs.components.velocity import Velocity
-from src.ecs.components.size import Size
-from src.ecs.components.color import Color
 from src.ecs.components.active import Active
 from src.ecs.components.tag_player import TagPlayer
 from src.ecs.components.input_command import InputCommand
+from src.ecs.components.c_surface import CSurface
+from src.ecs.components.c_animation import CAnimation, AnimationData
 
 from src.ecs.systems.system_input import SystemInput
 from src.ecs.systems.system_player_movement import SystemPlayerMovement
+from src.ecs.systems.system_player_animation import SystemPlayerAnimation
+from src.ecs.systems.system_hunter_animation import SystemHunterAnimation
 from src.ecs.systems.system_enemy_spawner import SystemEnemySpawner
+from src.ecs.systems.system_hunter_movement import SystemHunterMovement
 from src.ecs.systems.system_movement import SystemMovement
+from src.ecs.systems.system_animation import SystemAnimation
 from src.ecs.systems.system_screen_bounce import SystemScreenBounce
 from src.ecs.systems.system_player_boundary import SystemPlayerBoundary
 from src.ecs.systems.system_bullet_boundary import SystemBulletBoundary
 from src.ecs.systems.system_collision_bullet_enemy import SystemCollisionBulletEnemy
 from src.ecs.systems.system_collision_player_enemy import SystemCollisionPlayerEnemy
 from src.ecs.systems.system_rendering import SystemRendering
+from src.ecs.systems.system_explosion_cleanup import SystemExplosionCleanup
 
 
 class GameEngine:
@@ -62,9 +67,12 @@ class GameEngine:
         with open("assets/cfg/bullet.json") as f:
             bullet_cfg = json.load(f)
 
-        level_events   = level_full["enemy_spawn_events"]
-        player_spawn   = level_full["player_spawn"]["position"]
-        max_bullets    = level_full["player_spawn"]["max_bullets"]
+        with open("assets/cfg/explosion.json") as f:
+            explosion_cfg = json.load(f)
+
+        level_events  = level_full["enemy_spawn_events"]
+        player_spawn  = level_full["player_spawn"]["position"]
+        max_bullets   = level_full["player_spawn"]["max_bullets"]
 
         # Inicializar pygame y ventana
         pygame.init()
@@ -80,30 +88,70 @@ class GameEngine:
         # Crear el mundo ECS
         self.world = esper.World()
 
-        # Resolver eventos de spawn: cruzar nivel con tipos de enemigo
+        # ---- Cargar imágenes -----------------------------------------------
+        # Pre-cargar una superficie por tipo de enemigo (se comparte entre entidades)
+        enemy_surfaces = {}
+        for etype, ecfg in enemies_cfg.items():
+            enemy_surfaces[etype] = pygame.image.load(ecfg["image"]).convert_alpha()
+
+        bullet_surface = pygame.image.load(bullet_cfg["image"]).convert_alpha()
+        explosion_surface = pygame.image.load(explosion_cfg["image"]).convert_alpha()
+
+        # ---- Resolver eventos de spawn -------------------------------------
         spawn_events = []
         for event in level_events:
-            enemy = enemies_cfg[event["enemy_type"]]
+            etype = event["enemy_type"]
+            enemy = enemies_cfg[etype]
             spawn_events.append({
-                "time":      event["time"],
-                "position":  event["position"],
-                "size":      enemy["size"],
-                "color":     enemy["color"],
-                "speed_min": enemy["velocity_min"],
-                "speed_max": enemy["velocity_max"],
-                "spawned":   False
+                "time":                   event["time"],
+                "position":               event["position"],
+                "enemy_type_name":        etype,
+                "surface":                enemy_surfaces[etype],
+                "animations_cfg":         enemy.get("animations"),
+                "speed_min":              enemy.get("velocity_min", 0),
+                "speed_max":              enemy.get("velocity_max", 0),
+                "velocity_chase":         enemy.get("velocity_chase", 0),
+                "velocity_return":        enemy.get("velocity_return", 0),
+                "distance_start_chase":   enemy.get("distance_start_chase", 0),
+                "distance_start_return":  enemy.get("distance_start_return", 0),
+                "spawned":                False,
             })
 
         # Entidad singleton con los datos del spawner
         self.world.create_entity(EnemySpawner(spawn_events=spawn_events))
 
-        # Entidad jugador
-        p = player_cfg
+        # ---- Entidad jugador -----------------------------------------------
+        player_surface = pygame.image.load(player_cfg["image"]).convert_alpha()
+        p_anim_cfg = player_cfg["animations"]
+        p_num_frames = p_anim_cfg["number_frames"]
+        p_frame_w = player_surface.get_width() // p_num_frames
+        p_frame_h = player_surface.get_height()
+
+        player_animations = {}
+        for a in p_anim_cfg["list"]:
+            player_animations[a["name"]] = AnimationData(
+                name=a["name"], start=a["start"], end=a["end"], framerate=a["framerate"]
+            )
+
+        spawn_x = float(player_spawn["x"])
+        spawn_y = float(player_spawn["y"])
+
         self.world.create_entity(
-            Position(x=float(player_spawn["x"]), y=float(player_spawn["y"])),
+            Position(x=spawn_x, y=spawn_y),
             Velocity(dx=0.0, dy=0.0),
-            Size(width=float(p["size"]["x"]), height=float(p["size"]["y"])),
-            Color(r=p["color"]["r"], g=p["color"]["g"], b=p["color"]["b"]),
+            CSurface(
+                surface=player_surface,
+                area=pygame.Rect(0, 0, p_frame_w, p_frame_h)
+            ),
+            CAnimation(
+                animations=player_animations,
+                current_animation="IDLE",
+                current_frame=player_animations["IDLE"].start,
+                elapsed_time=0.0,
+                number_frames=p_num_frames,
+                frame_width=p_frame_w,
+                looping=True
+            ),
             Active(),
             TagPlayer()
         )
@@ -111,18 +159,34 @@ class GameEngine:
         # Entidad singleton de comandos de entrada
         self.world.create_entity(InputCommand())
 
-        # Registrar sistemas (mayor prioridad = se ejecuta primero)
-        self.world.add_processor(SystemInput(),                                                   priority=10)
-        self.world.add_processor(SystemPlayerMovement(p["input_velocity"], bullet_cfg, max_bullets), priority=9)
-        self.world.add_processor(SystemEnemySpawner(),                                            priority=8)
-        self.world.add_processor(SystemMovement(),                                                priority=7)
-        self.world.add_processor(SystemScreenBounce(size["w"], size["h"]),                        priority=6)
-        self.world.add_processor(SystemPlayerBoundary(size["w"], size["h"]),                      priority=5)
-        self.world.add_processor(SystemBulletBoundary(size["w"], size["h"]),                      priority=4)
-        self.world.add_processor(SystemCollisionBulletEnemy(),                                    priority=3)
-        self.world.add_processor(SystemCollisionPlayerEnemy(
-            float(player_spawn["x"]), float(player_spawn["y"])),                                  priority=2)
-        self.world.add_processor(SystemRendering(self.screen, self.bg_color),                     priority=1)
+        # ---- Datos de explosión para los sistemas de colisión ---------------
+        expl_anim_cfg = explosion_cfg["animations"]
+
+        # ---- Registrar sistemas (mayor prioridad = se ejecuta primero) ------
+        self.world.add_processor(SystemInput(),                                          priority=10)
+        self.world.add_processor(
+            SystemPlayerMovement(
+                player_speed=player_cfg["input_velocity"],
+                bullet_surface=bullet_surface,
+                bullet_velocity=bullet_cfg["velocity"],
+                max_bullets=max_bullets
+            ),                                                                           priority=9)
+        self.world.add_processor(SystemPlayerAnimation(),                                priority=85)
+        self.world.add_processor(SystemHunterAnimation(),                                priority=84)
+        self.world.add_processor(SystemEnemySpawner(),                                   priority=8)
+        self.world.add_processor(SystemHunterMovement(),                                 priority=75)
+        self.world.add_processor(SystemMovement(),                                       priority=7)
+        self.world.add_processor(SystemAnimation(),                                      priority=68)
+        self.world.add_processor(SystemScreenBounce(size["w"], size["h"]),               priority=6)
+        self.world.add_processor(SystemPlayerBoundary(size["w"], size["h"]),             priority=5)
+        self.world.add_processor(SystemBulletBoundary(size["w"], size["h"]),             priority=4)
+        self.world.add_processor(
+            SystemCollisionBulletEnemy(explosion_surface, expl_anim_cfg),                priority=3)
+        self.world.add_processor(
+            SystemCollisionPlayerEnemy(spawn_x, spawn_y, explosion_surface, expl_anim_cfg),
+                                                                                         priority=2)
+        self.world.add_processor(SystemRendering(self.screen, self.bg_color),            priority=1)
+        self.world.add_processor(SystemExplosionCleanup(),                               priority=0)
 
     # -------------------------------------------------------------------------
     # CALCULAR TIEMPO

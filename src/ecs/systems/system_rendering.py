@@ -1,12 +1,11 @@
-"""Sistema de renderizado: limpia la pantalla y dibuja todos los rectángulos."""
+"""Sistema de renderizado: limpia la pantalla y dibuja todos los sprites activos."""
 
 import pygame
 import esper
 
 from src.ecs.components.position import Position
-from src.ecs.components.size import Size
-from src.ecs.components.color import Color
 from src.ecs.components.active import Active
+from src.ecs.components.c_surface import CSurface
 
 
 class SystemRendering(esper.Processor):
@@ -18,11 +17,7 @@ class SystemRendering(esper.Processor):
     def process(self, delta_time):
         self.screen.fill(self.bg_color)
 
-        for _, (pos, size, color, _) in self.world.get_components(Position, Size, Color, Active):
-            pygame.draw.rect(
-                self.screen,
-                (color.r, color.g, color.b),
-                pygame.Rect(pos.x, pos.y, size.width, size.height)
-            )
+        for _, (pos, c_surf, _) in self.world.get_components(Position, CSurface, Active):
+            self.screen.blit(c_surf.surface, (pos.x, pos.y), c_surf.area)
 
         pygame.display.flip()

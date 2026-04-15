@@ -3,9 +3,9 @@
 import esper
 
 from src.ecs.components.position import Position
-from src.ecs.components.size import Size
 from src.ecs.components.active import Active
 from src.ecs.components.tag_player import TagPlayer
+from src.ecs.components.c_surface import CSurface
 
 
 class SystemPlayerBoundary(esper.Processor):
@@ -15,6 +15,9 @@ class SystemPlayerBoundary(esper.Processor):
         self.screen_height = screen_height
 
     def process(self, delta_time):
-        for _, (pos, size, _, _) in self.world.get_components(Position, Size, Active, TagPlayer):
-            pos.x = max(0.0, min(pos.x, self.screen_width  - size.width))
-            pos.y = max(0.0, min(pos.y, self.screen_height - size.height))
+        for _, (pos, c_surf, _, _) in self.world.get_components(
+                Position, CSurface, Active, TagPlayer):
+            w = c_surf.area.width
+            h = c_surf.area.height
+            pos.x = max(0.0, min(pos.x, self.screen_width  - w))
+            pos.y = max(0.0, min(pos.y, self.screen_height - h))

@@ -3,9 +3,9 @@
 import esper
 
 from src.ecs.components.position import Position
-from src.ecs.components.size import Size
 from src.ecs.components.active import Active
 from src.ecs.components.tag_bullet import TagBullet
+from src.ecs.components.c_surface import CSurface
 
 
 class SystemBulletBoundary(esper.Processor):
@@ -16,9 +16,12 @@ class SystemBulletBoundary(esper.Processor):
 
     def process(self, delta_time):
         to_delete = []
-        for ent, (pos, size, _, _) in self.world.get_components(Position, Size, Active, TagBullet):
-            if (pos.x + size.width < 0 or pos.x > self.screen_width or
-                    pos.y + size.height < 0 or pos.y > self.screen_height):
+        for ent, (pos, c_surf, _, _) in self.world.get_components(
+                Position, CSurface, Active, TagBullet):
+            w = c_surf.area.width
+            h = c_surf.area.height
+            if (pos.x + w < 0 or pos.x > self.screen_width or
+                    pos.y + h < 0 or pos.y > self.screen_height):
                 to_delete.append(ent)
 
         for ent in to_delete:
