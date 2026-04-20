@@ -1,6 +1,5 @@
 """Sistema de renderizado: limpia la pantalla y dibuja todos los sprites activos."""
 
-import pygame
 import esper
 
 from src.ecs.components.position import Position
@@ -19,5 +18,3 @@ class SystemRendering(esper.Processor):
 
         for _, (pos, c_surf, _) in self.world.get_components(Position, Surface, Active):
             self.screen.blit(c_surf.surface, (pos.x, pos.y), c_surf.area)
-
-        pygame.display.flip()

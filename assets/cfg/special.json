@@ -1,0 +1,7 @@
+{
+    "image": "assets/img/bullet_especial.png",
+    "sound": "assets/snd/laser_special.ogg",
+    "velocity": 220,
+    "cooldown": 2.5,
+    "spread_deg": 45
+}

@@ -29,3 +29,4 @@ class HunterState:
     distance_start_chase: float
     distance_start_return: float
     state: HunterFSM = field(default=HunterFSM.IDLE)
+    sound_chase: str = field(default="")

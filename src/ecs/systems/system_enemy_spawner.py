@@ -13,6 +13,7 @@ from src.ecs.components.tag_enemy import TagEnemy
 from src.ecs.components.surface import Surface
 from src.ecs.components.animation import Animation, AnimationData
 from src.ecs.components.hunter_state import HunterState, HunterFSM
+from src.engine.service_locator import ServiceLocator
 
 
 class SystemEnemySpawner(esper.Processor):
@@ -58,6 +59,8 @@ class SystemEnemySpawner(esper.Processor):
             Active(),
             TagEnemy()
         )
+        if event.get("sound"):
+            ServiceLocator.sounds.play(event["sound"])
 
     def _spawn_hunter(self, pos, surface, event):
         anim_cfg = event["animations_cfg"]
@@ -97,7 +100,8 @@ class SystemEnemySpawner(esper.Processor):
                 velocity_return=event["velocity_return"],
                 distance_start_chase=event["distance_start_chase"],
                 distance_start_return=event["distance_start_return"],
-                state=HunterFSM.IDLE
+                state=HunterFSM.IDLE,
+                sound_chase=event.get("sound_chase", "")
             ),
             Active(),
             TagEnemy()

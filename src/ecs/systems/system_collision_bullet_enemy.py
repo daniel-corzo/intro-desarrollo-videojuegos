@@ -10,6 +10,9 @@ from src.ecs.components.tag_enemy import TagEnemy
 from src.ecs.components.tag_explosion import TagExplosion
 from src.ecs.components.surface import Surface
 from src.ecs.components.animation import Animation, AnimationData
+from src.engine.service_locator import ServiceLocator
+
+_EXPLOSION_SOUND = "assets/snd/explosion.ogg"
 
 
 class SystemCollisionBulletEnemy(esper.Processor):
@@ -44,6 +47,7 @@ class SystemCollisionBulletEnemy(esper.Processor):
                     mid_y = (b_pos.y + b_surf.area.height / 2 +
                              e_pos.y + e_surf.area.height / 2) / 2
                     self._spawn_explosion(mid_x, mid_y)
+                    ServiceLocator.sounds.play(_EXPLOSION_SOUND)
                     self.world.delete_entity(b_ent)
                     self.world.delete_entity(e_ent)
                     break

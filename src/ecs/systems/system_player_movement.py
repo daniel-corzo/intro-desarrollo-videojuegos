@@ -11,16 +11,18 @@ from src.ecs.components.tag_player import TagPlayer
 from src.ecs.components.tag_bullet import TagBullet
 from src.ecs.components.input_command import InputCommand
 from src.ecs.components.surface import Surface
+from src.engine.service_locator import ServiceLocator
 
 
 class SystemPlayerMovement(esper.Processor):
 
     def __init__(self, player_speed: float, bullet_surface: pygame.Surface,
-                 bullet_velocity: float, max_bullets: int):
+                 bullet_velocity: float, max_bullets: int, bullet_sound: str):
         self.player_speed = player_speed
         self.bullet_surface = bullet_surface
         self.bullet_velocity = bullet_velocity
         self.max_bullets = max_bullets
+        self._bullet_sound = bullet_sound
         # Pre-calcular dimensiones de la bala (son fijas)
         self._bullet_w = bullet_surface.get_width()
         self._bullet_h = bullet_surface.get_height()
@@ -76,3 +78,4 @@ class SystemPlayerMovement(esper.Processor):
             Active(),
             TagBullet()
         )
+        ServiceLocator.sounds.play(self._bullet_sound)

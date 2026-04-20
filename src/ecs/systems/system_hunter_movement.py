@@ -10,6 +10,7 @@ from src.ecs.components.surface import Surface
 from src.ecs.components.hunter_state import HunterState, HunterFSM
 from src.ecs.components.tag_enemy import TagEnemy
 from src.ecs.components.tag_player import TagPlayer
+from src.engine.service_locator import ServiceLocator
 
 _ARRIVAL_THRESHOLD = 8.0  # píxeles de tolerancia para considerar "llegado al origen"
 
@@ -38,6 +39,8 @@ class SystemHunterMovement(esper.Processor):
                 vel.dy = 0.0
                 if dist_to_player < hunter.distance_start_chase:
                     hunter.state = HunterFSM.CHASING
+                    if hunter.sound_chase:
+                        ServiceLocator.sounds.play(hunter.sound_chase)
 
             elif hunter.state == HunterFSM.CHASING:
                 if dist_to_origin > hunter.distance_start_return:

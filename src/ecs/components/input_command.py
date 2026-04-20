@@ -10,11 +10,12 @@ class InputCommand:
     mouse_x / mouse_y: posición del ratón en el momento de PLAYER_FIRE
     """
     actions: dict = field(default_factory=lambda: {
-        "PLAYER_LEFT":  False,
-        "PLAYER_RIGHT": False,
-        "PLAYER_UP":    False,
-        "PLAYER_DOWN":  False,
-        "PLAYER_FIRE":  False,
+        "PLAYER_LEFT":    False,
+        "PLAYER_RIGHT":   False,
+        "PLAYER_UP":      False,
+        "PLAYER_DOWN":    False,
+        "PLAYER_FIRE":    False,
+        "PLAYER_SPECIAL": False,
     })
     mouse_x: float = 0.0
     mouse_y: float = 0.0

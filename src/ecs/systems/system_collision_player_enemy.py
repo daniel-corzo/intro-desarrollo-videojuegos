@@ -11,6 +11,9 @@ from src.ecs.components.tag_enemy import TagEnemy
 from src.ecs.components.tag_explosion import TagExplosion
 from src.ecs.components.surface import Surface
 from src.ecs.components.animation import Animation, AnimationData
+from src.engine.service_locator import ServiceLocator
+
+_EXPLOSION_SOUND = "assets/snd/explosion.ogg"
 
 
 class SystemCollisionPlayerEnemy(esper.Processor):
@@ -46,6 +49,7 @@ class SystemCollisionPlayerEnemy(esper.Processor):
                     mid_y = (p_pos.y + p_surf.area.height / 2 +
                              e_pos.y + e_surf.area.height / 2) / 2
                     self._spawn_explosion(mid_x, mid_y)
+                    ServiceLocator.sounds.play(_EXPLOSION_SOUND)
                     p_pos.x = self.spawn_x
                     p_pos.y = self.spawn_y
                     p_vel.dx = 0.0

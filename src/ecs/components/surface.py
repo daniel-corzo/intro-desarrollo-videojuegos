@@ -16,3 +16,8 @@ class Surface:
     """
     surface: pygame.Surface
     area: pygame.Rect
+
+    @classmethod
+    def from_text(cls, text: str, font: pygame.font.Font, color: tuple) -> "Surface":
+        rendered = font.render(text, True, color)
+        return cls(surface=rendered, area=rendered.get_rect())

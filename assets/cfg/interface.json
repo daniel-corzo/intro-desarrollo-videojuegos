@@ -1,0 +1,40 @@
+{
+    "font": "assets/fnt/PressStart2P.ttf",
+    "texts": {
+        "title": {
+            "text": "MISO - EJ. 04",
+            "size": 14,
+            "color": {"r": 255, "g": 255, "b": 255},
+            "position": {"x": 320, "y": 10},
+            "anchor": "top_center"
+        },
+        "instructions": {
+            "text": "FLECHAS: mover | CLICK: disparar | ESPACIO: especial | P: pausa",
+            "size": 6,
+            "color": {"r": 160, "g": 160, "b": 160},
+            "position": {"x": 320, "y": 348},
+            "anchor": "top_center"
+        },
+        "paused": {
+            "text": "PAUSADO",
+            "size": 20,
+            "color": {"r": 255, "g": 220, "b": 60},
+            "position": {"x": 320, "y": 160},
+            "anchor": "center"
+        },
+        "paused_sub": {
+            "text": "P para continuar",
+            "size": 10,
+            "color": {"r": 255, "g": 220, "b": 60},
+            "position": {"x": 320, "y": 195},
+            "anchor": "center"
+        },
+        "special_label": {
+            "text": "ESPECIAL: LISTO",
+            "size": 7,
+            "color": {"r": 100, "g": 255, "b": 120},
+            "position": {"x": 10, "y": 10},
+            "anchor": "top_left"
+        }
+    }
+}
