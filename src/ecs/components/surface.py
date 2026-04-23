@@ -1,5 +1,7 @@
 """Componente Surface: textura y área de recorte para una entidad con sprite."""
 
+from __future__ import annotations
+
 import pygame
 from dataclasses import dataclass
 

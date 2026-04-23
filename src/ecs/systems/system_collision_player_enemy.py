@@ -1,5 +1,7 @@
 """Sistema de colisiones jugador-enemigo: reinicia al jugador, elimina enemigo y genera explosión."""
 
+from __future__ import annotations
+
 import pygame
 import esper
 

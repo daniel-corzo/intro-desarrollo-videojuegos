@@ -1,5 +1,7 @@
 """Sistema de movimiento del jugador: aplica comandos de entrada y dispara balas."""
 
+from __future__ import annotations
+
 import math
 import pygame
 import esper

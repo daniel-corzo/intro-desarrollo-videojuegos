@@ -1,5 +1,7 @@
 """Sistema de spawn: crea enemigos en el momento indicado por el nivel."""
 
+from __future__ import annotations
+
 import math
 import random
 import pygame

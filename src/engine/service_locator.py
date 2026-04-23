@@ -1,5 +1,7 @@
 """ServiceLocator: acceso centralizado y cacheado a sonidos, imágenes y fuentes."""
 
+from __future__ import annotations
+
 import pygame
 
 

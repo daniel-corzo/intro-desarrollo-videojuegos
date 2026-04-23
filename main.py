@@ -2,6 +2,7 @@
 """Función Main"""
 
 import asyncio
+import pygame
 from src.engine.game_engine import GameEngine
 
 

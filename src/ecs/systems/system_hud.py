@@ -1,5 +1,7 @@
 """Sistema HUD: actualiza el texto y la barra de cooldown del especial."""
 
+from __future__ import annotations
+
 import pygame
 import esper
 

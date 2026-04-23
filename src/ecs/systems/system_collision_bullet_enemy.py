@@ -1,5 +1,7 @@
 """Sistema de colisiones bala-enemigo: elimina ambos al tocarse y genera explosión."""
 
+from __future__ import annotations
+
 import pygame
 import esper
 
