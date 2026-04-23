@@ -33,6 +33,10 @@ The project follows the **Entity Component System** pattern:
 | **System** | Logic that processes all entities matching a component signature |
 | **Engine** | Game loop that ticks all systems each frame |
 
+## Play Online
+
+**[Play Space Ranger on itch.io](https://daniel-corzo.itch.io/space-ranger)**
+
 ## Running
 
 **Desktop:**
@@ -41,13 +45,20 @@ pip install -r requirements.txt
 python main.py
 ```
 
-**Web (pygbag):**
+**Web (pygbag — local dev):**
 ```bash
 python -m pygbag main.py
 ```
 Then open `http://localhost:8000` in your browser.
 
+**Web (pygbag — build archive for itch.io):**
+```bash
+pygbag --archive main.py
+```
+Upload `build/web/intro-desarrollo-videojuegos.apk` to itch.io as an HTML game.
+
 > `esper` is vendored in the `esper/` folder so it is available in the WebAssembly runtime. This is required because pygbag runs on Pyodide, which cannot use packages installed in your local virtualenv.
+> `pygame` must be imported directly in `main.py` so pygbag knows to preload it for pyodide.
 
 ## Topics Covered
 
